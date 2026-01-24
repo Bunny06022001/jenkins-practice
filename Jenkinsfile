@@ -26,7 +26,7 @@ pipeline{
                     unstash 'war-app'
                     sh '''
                         docker build -t tomcat-war:v1 .
-                        docker run --name=webapp -p 8000:8080 -d tomcat-war:v1
+                        docker run --name=webapp1 -p 8000:8080 -d tomcat-war:v1
                     '''
             }
         }
