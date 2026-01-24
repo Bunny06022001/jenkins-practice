@@ -13,7 +13,7 @@ pipeline{
                         echo "in agent"
                         mvn clean package
                     '''
-                    stash name: 'war',includes: 'target/*.war'
+                    stash name: 'war-app',includes: 'target/*.war'
             }
         }
         stage('image building'){
@@ -23,7 +23,7 @@ pipeline{
             steps{
                 echo "in agent2 node"
                 checkout scm
-                    unstash 'war'
+                    unstash 'war-app'
                     sh '''
                         docker build -t tomcat-war:v1 .
                         docker run --name=webapp -p 8000:8080 -d tomcat-war:v1
