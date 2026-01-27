@@ -6,13 +6,7 @@ pipeline{
                 label 'node1'
             }
             steps{
-                checkout([
-                    $class: 'GitSCM',
-                    branches: [[name: "*/main"]],
-                    userRemoteConfigs: [[
-                        url: 'https://github.com/Bunny06022001/jenkins-practice.git' 
-                        ]]
-                    ])
+                checkout scm
                 echo "iam in build step"
                 echo "succesful pulled code"
                 sh '''
@@ -28,13 +22,7 @@ pipeline{
             }
             steps{
                 echo "in agent2 node"
-                checkout([
-                    $class: 'GitSCM',
-                    branches: [[name: "*/main"]],
-                    userRemoteConfigs: [[
-                        url: 'https://github.com/Bunny06022001/jenkins-practice.git' 
-                        ]]
-                    ])
+                checkout scm
                 unstash 'war-app'
                 sh '''
                     docker build -t tomcat-war:v1 .
