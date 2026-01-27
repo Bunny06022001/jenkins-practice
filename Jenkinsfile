@@ -3,7 +3,7 @@ pipeline{
     stages{
         stage('checkout & build'){
             agent{
-                label 'linux-agent'
+                label 'code1'
             }
             steps{
                 checkout scm
