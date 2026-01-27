@@ -38,6 +38,8 @@ pipeline{
                 unstash 'war-app'
                 sh '''
                     docker build -t tomcat-war:v1 .
+                    docker stop $(docker ps -aq)
+                    docker rm $(docker ps -aq)
                     docker run --name=webapp1 -p 8000:8080 -d tomcat-war:v1
                 '''
             }
