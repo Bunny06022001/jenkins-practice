@@ -35,7 +35,7 @@ pipeline{
             parallel{
                 stage('build jar'){
                     agent{
-                        label 'node1'
+                        label 'node2'
                     }
                     options{
                         retry(2)
@@ -50,10 +50,8 @@ pipeline{
                         label 'node2'
                     }
                     steps{
-                        unstash 'source-code'
+                      
                         sh '''
-                        mvn clean package
-                        
                         docker rm -f $(docker ps -aq) || true
                         docker rmi -f $(docker images -aq) || true
                         docker build -t app:${BUILD_NUMBER} .
