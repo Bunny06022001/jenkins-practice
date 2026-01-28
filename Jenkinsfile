@@ -43,6 +43,7 @@ pipeline{
                     steps{
                         unstash 'source-code'
                         sh '''
+                        mvn clean package
                         docker stop $(docker ps -aq)
                         docker container prune
                         docker rmi -f $(docker images -aq)
