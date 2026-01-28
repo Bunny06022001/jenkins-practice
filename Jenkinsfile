@@ -72,7 +72,7 @@ pipeline{
                     )
                 }
                  sh '''
-                docker run -d -p ${APP_PORT}:8080 --name=app:${BUILD_NUMBER} app:${BUILD_NUMBER}
+                docker run -d -p ${APP_PORT}:8080 --name=app-${BUILD_NUMBER} app:${BUILD_NUMBER}
                 '''
                 
             }
@@ -95,7 +95,7 @@ pipeline{
             steps{
                 sh '''
                 
-                docker run -d -p ${APP_PORT}:8080 --name=app app:${BUILD_NUMBER}
+                docker run -d -p ${APP_PORT}:8080 --name=app app-${BUILD_NUMBER}
                 '''
             }
             post{
