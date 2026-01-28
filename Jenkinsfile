@@ -31,10 +31,7 @@ pipeline{
            
              
         }
-        stage('parallel build jar and docker image'){
-            failFast true
-            parallel{
-                stage('build jar'){
+         stage('build jar'){
                     agent{
                         label 'node1'
                     }
@@ -47,6 +44,10 @@ pipeline{
                         stash name: 'app-war',includes: 'target/*.war'
                     }
                 }
+        stage('parallel build jar and docker image'){
+            failFast true
+            parallel{
+               
                 stage('build image'){
                     agent{
                         label 'node2'
