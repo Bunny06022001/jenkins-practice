@@ -1,8 +1,7 @@
 pipeline{
     options{
         skipDefaultCheckout()
-        ansiColor('xterm')
-        timestamps()
+        
         timeout(time: 10,unit: 'MINUTES')
     }
     agent none
