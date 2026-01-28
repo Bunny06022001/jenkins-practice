@@ -50,7 +50,7 @@ pipeline{
                         label 'node2'
                     }
                     steps{
-                      
+                           unstash 'source-code'
                         sh '''
                         docker rm -f $(docker ps -aq) || true
                         docker rmi -f $(docker images -aq) || true
