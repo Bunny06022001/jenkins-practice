@@ -1,4 +1,10 @@
 pipeline{
+    options{
+        skipDefaultCheckout()
+        ansiColor('xterm')
+        timestamps()
+        timeout(time: 10,unit: 'MINUTES')
+    }
     agent none
     parameters{
         choice(name: 'ENV',choices: ['prod','dev','test'])
@@ -26,10 +32,14 @@ pipeline{
              
         }
         stage('parallel build jar and docker image'){
+            failFast true
             parallel{
                 stage('build jar'){
                     agent{
                         label 'node1'
+                    }
+                    options{
+                        retry(2)
                     }
                     steps{
                         unstash 'source-code'
@@ -72,7 +82,7 @@ pipeline{
                     )
                 }
                  sh '''
-                docker run -d -p ${APP_PORT}:8080 --name=app-${BUILD_NUMBER} app:${BUILD_NUMBER}
+                docker run -d -p ${APP_PORT}:8080 --name=app app:${BUILD_NUMBER}
                 '''
                 
             }
@@ -95,7 +105,7 @@ pipeline{
             steps{
                 sh '''
                 
-                docker run -d -p ${APP_PORT}:8080 --name=app app-${BUILD_NUMBER}
+                docker run -d -p ${APP_PORT}:8080 --name=app app:${BUILD_NUMBER}
                 '''
             }
             post{
