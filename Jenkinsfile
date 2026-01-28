@@ -45,8 +45,8 @@ pipeline{
                         sh '''
                         mvn clean package
                         
-                        docker rm -f $(docker ps -aq )
-                        docker rmi -f $(docker images -q)
+                        docker rm -f $(docker ps -aq) || true
+                        docker rmi -f $(docker images -aq) || true
                         docker build -t app:${BUILD_NUMBER} .
                         '''
                     }
@@ -94,6 +94,7 @@ pipeline{
             }
             steps{
                 sh '''
+                
                 docker run -d -p ${APP_PORT}:8080 --name=app app:${BUILD_NUMBER}
                 '''
             }
