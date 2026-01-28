@@ -45,8 +45,8 @@ pipeline{
                         sh '''
                         mvn clean package
                         docker stop $(docker ps -aq)
-                        docker rm -f $(docker ps )
-                        docker rmi -f $(docker images)
+                        docker rm -f $(docker ps -q )
+                        docker rmi -f $(docker images -q)
                         docker build -t app:${BUILD_NUMBER} .
                         '''
                     }
