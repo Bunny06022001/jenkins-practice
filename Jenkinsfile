@@ -10,6 +10,7 @@ pipeline{
     }
     environment{
         APP_PORT = "${params.ENV == 'prod' ? '8000' : '7000'}"
+        IMAGE_NAME = "srinivas06022001/jenkins-pipelines"
     }
     stages{
         stage('checkout'){
@@ -35,7 +36,7 @@ pipeline{
             parallel{
                 stage('build jar'){
                     agent{
-                        label 'node2'
+                        label 'node1'
                     }
                     options{
                         retry(2)
@@ -43,6 +44,7 @@ pipeline{
                     steps{
                         unstash 'source-code'
                         sh 'mvn clean package'
+                        stash name: 'app-war',includes: 'target/*.war'
                     }
                 }
                 stage('build image'){
@@ -51,11 +53,25 @@ pipeline{
                     }
                     steps{
                            unstash 'source-code'
+                            unstash 'app-war'
                         sh '''
                         docker rm -f $(docker ps -aq) || true
                         docker rmi -f $(docker images -aq) || true
-                        docker build -t app:${BUILD_NUMBER} .
+                        docker build -t ${IMAGE_NAME}:${BUILD_NUMBER} .
                         '''
+                        withCredentials([
+                            usernamePassword(
+                                credentialsId: 'docker',
+                                usernameVariable: 'DOCKER_USER',
+                                passwordVariable: 'DOCKER_PASS'
+                            )
+                        ])
+                        {
+                            sh '''
+                            echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
+                            docker push ${IMAGE_NAME}:${BUILD_NUMBER}
+                            '''
+                        }
                     }
                     
                 }
@@ -79,7 +95,7 @@ pipeline{
                     )
                 }
                  sh '''
-                docker run -d -p ${APP_PORT}:8080 --name=app app:${BUILD_NUMBER}
+                docker run -d -p ${APP_PORT}:8080 --name=app ${IMAGE_NAME}:${BUILD_NUMBER}
                 '''
                 
             }
@@ -102,7 +118,7 @@ pipeline{
             steps{
                 sh '''
                 
-                docker run -d -p ${APP_PORT}:8080 --name=app app:${BUILD_NUMBER}
+                docker run -d -p ${APP_PORT}:8080 --name=app ${IMAGE_NAME}:${BUILD_NUMBER}
                 '''
             }
             post{
